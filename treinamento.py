@@ -28,10 +28,12 @@ def main(filename):
 
     #criar matriz de pesos da primeira camada com valores aleatórios
     for i in range(qtNeuronios):
-        pesosV.append([round(random.random(),5) for x in range(qtNeuroniosIntermediarios)])
+        pesosV.append([round(random.random() * 2 - 1, 5) for x in range(qtNeuroniosIntermediarios)])
 
     for i in range(qtNeuroniosIntermediarios):
-        pesosW.append([round(random.random(),5) for x in range(qtSaidas)])
+        pesosW.append([round(random.random() * 2 - 1, 5) for x in range(qtSaidas)])
+
+    print(pesosV[0])
 
     #feedforward
     for linha in range(len(entrada)):
@@ -39,11 +41,12 @@ def main(filename):
         for j in range(qtNeuroniosIntermediarios):
             estaEntrada = entrada[linha]
             z_in.append(sum([estaEntrada[i] * pesosV[i][j] for i in range(qtNeuronios)]))
-        z_in = [round(x/16384.0, 5) for x in z_in] #normalizar para aplicação de sigmoide
+        z_in = [round(x/256.0, 5) for x in z_in] #normalizar para aplicação de sigmoide
         print (z_in)
         z_out = [sigmoide(j) for j in z_in]
         print (z_out)
 
+        s
         y_in = []
         for k in range(qtSaidas):
             estaEntrada = z_out
