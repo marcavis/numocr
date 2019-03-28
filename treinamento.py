@@ -14,10 +14,11 @@ def main(filename):
     saida = [] #matriz de saida, 10 colunas
     qtSaidas = 10 #de 0 a 9
     qtNeuronios = len(linhas[0].split(",")) - 1 #784
-    qtNeuroniosIntermediarios = int((10 * 784) ** (1/2)) #media geometrica
+    qtNeuroniosIntermediarios = int((10 * 784) ** (0.5)) #media geometrica
+    qtNeuroniosIntermediarios = 30
     pesosV = [] #matriz de pesos da primeira camada
     pesosW = [] #matriz de pesos da segunda camada
-    taxaAprendizado = 0.08
+    taxaAprendizado = 0.22
 
 
     for linha in linhas[1:]:
@@ -38,9 +39,10 @@ def main(filename):
     print(pesosV[0])
 
     start = time.time()
+    erroTotal = 0
     #feedforward
     for linha in range(len(entrada)):
-        print((time.time() - start) * 1000, "ms")
+        #print((time.time() - start) * 1000, "ms")
         start = time.time()
         z_in = []
         for j in range(qtNeuroniosIntermediarios):
@@ -51,6 +53,8 @@ def main(filename):
         z_out = [sigmoide(j) for j in z_in]
         #print (z_out)
 
+
+
         y_in = []
         for k in range(qtSaidas):
             estaEntrada = z_out
@@ -59,11 +63,16 @@ def main(filename):
         #print()
         #print(y_in)
         y_out = [sigmoide(k) for k in y_in]
-        #print (y_out)
+        # if random.random() > 0.015:
+        #     print (y_in)
+        #     q
 
         estaSaida = saida[linha]
+        erroTotal += sum([abs(estaSaida[x] - y_out[x]) for x in range(10)])
+        if(linha % 100 == 0): print(linha, ": ", erroTotal)
         termoInfErroFinal = [(estaSaida[k] - y_out[k]) * derivada(y_in[k]) for k in range(qtSaidas)]
-        #print(delta)
+
+        #print(estaSaida[0] - y_out[0])
         delta_w = []
         for j in range(qtNeuroniosIntermediarios):
             delta_w.append([taxaAprendizado * termoInfErroFinal[k] * z_out[j] for k in range(qtSaidas) ])
@@ -76,6 +85,7 @@ def main(filename):
 
         termoInfErroInicial = [delta_in[j] * derivada(z_in[j]) for j in range(qtNeuroniosIntermediarios)]
 
+
         delta_v = []
         for i in range(qtNeuronios):
             delta_v.append([taxaAprendizado * termoInfErroInicial[j] * entrada[linha][i] for j in range(qtNeuroniosIntermediarios) ])
@@ -85,17 +95,18 @@ def main(filename):
 
 
         #atualização de pesos
-        # for i in range(len(pesosV)):
-        #     for j in range(len(pesosV[i])):
-        #         pesosV[i][j] += delta_v[i][j]
+
+        for i in range(len(pesosV)):
+            pesosV[i] = [x + y for (x,y) in zip(pesosV[i], delta_v[i])]
 
         for j in range(len(pesosW)):
-            for k in range(len(pesosW[j])):
-                pesosW[j][k] += delta_w[j][k]
+            pesosW[j] = [x + y for (x,y) in zip(pesosW[j], delta_w[j])]
 
-        #pesosV = [pesosV[i][j] + delta_v[i][j] for i in range(qtNeuronios) for j in range(qtNeuroniosIntermediarios)]
-        #pesosW = [pesosW[j][k] + delta_w[j][k] for j in range(qtNeuroniosIntermediarios) for k in range(qtSaidas)]
-        print()
+
+        # total = 0
+        # for x in pesosV: total += sum(x)
+        # print(total)
+        #print(pesosW[10][2])
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:

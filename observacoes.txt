@@ -23,3 +23,17 @@ mais pesada do código.
     Processamento de uma linha: 28 ms, dos quais 8.8 ms são para atualizar os
 pesos da primeira camada, e 0.2 ms para atualizar os pesos da segunda camada.
 Talvez haja algo melhor que um loop?
+    De fato, atualizar pesos linha por linha, usando list comprehensions, como:
+    pesosV[i] = [x + y for (x,y) in zip(pesosV[i], delta_v[i])]
+    Economiza 3 ms por linha processada.
+    Porém, uma otimização bem mais potente seria diminuir a quantidade de
+neurônios intermediários - uma diminuição em 50% diminui o tempo de
+processamento em cerca de 45%, o que pode ser testado se isso não trouxer
+prejuízo ao funcionamento do programa.
+
+
+Código usado para temporização:
+    start = time.time()
+    ...
+    print((time.time() - start) * 1000, "ms")
+    start = time.time()
