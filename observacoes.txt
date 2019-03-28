@@ -1,0 +1,25 @@
+    A primeira consideração tomada na implementação do algoritmo foi decidir a
+quantidade de neurônios na camada intermediária - a média geométrica pareceu ser
+interessante para isso.
+    Uma preocupação inicial foi sempre evitar enganos nos índices; felizmente,
+a sintaxe de Python é razoavelmente compacta, portanto é possível escrever
+código que se pareça com as funções matemáticas descritas no algoritmo da
+apostila, sem ser obscurecido por loops - até certo ponto, pois o preenchimento
+de matrizes fica mais claro usando loops para uma das dimensões.
+    Um problema encontrado, no momento em que o algoritmo chegou no cálculo de
+z_in, foi que o valor que chegava para a função sigmoide era sempre muito alto,
+na faixa de 30, o que sempre levava a um resultado muito próximo a 1. Tentou-se,
+sem muita convicção, dividir os valores de z_in por algum fator, a título de
+normalização, para que o resultado da função sigmoide se aproximasse de 0.5,
+sendo portanto valores mais adequados para se trabalhar.
+    Só no dia seguinte é notado que a função de geração de pesos aleatórios
+estava gerando pesos apenas entre 0.0 e 1.0, o que explicava essa tendência
+positiva exagerada.
+    Os valores continuam muito altos, então tentaremos uma normalização das
+entradas, para que valores de 0 a 255 fiquem compreendidos entre 0.0 e 1.0.
+    Em algum ponto, uma preocupação com a velocidade do código aparece, então
+testamos a função time.time() da biblioteca Python para verificar qual a parte
+mais pesada do código.
+    Processamento de uma linha: 28 ms, dos quais 8.8 ms são para atualizar os
+pesos da primeira camada, e 0.2 ms para atualizar os pesos da segunda camada.
+Talvez haja algo melhor que um loop?
