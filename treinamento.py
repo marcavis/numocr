@@ -14,11 +14,11 @@ def main(filename):
     saida = [] #matriz de saida, 10 colunas
     qtSaidas = 10 #de 0 a 9
     qtNeuronios = len(linhas[0].split(",")) - 1 #784
-    qtNeuroniosIntermediarios = int((10 * 784) ** (0.5)) #media geometrica
-    qtNeuroniosIntermediarios = 30
+    #qtNeuroniosIntermediarios = int((10 * 784) ** (0.5)) #media geometrica
+    qtNeuroniosIntermediarios = 40 #mas um número menor já basta
     pesosV = [] #matriz de pesos da primeira camada
     pesosW = [] #matriz de pesos da segunda camada
-    taxaAprendizado = 0.22
+    taxaAprendizado = 0.20
 
 
     for linha in linhas[1:]:
@@ -36,77 +36,121 @@ def main(filename):
         pesosW.append([round(random.random() * 2 - 1, 5) for x in range(qtSaidas)])
 
 
-    print(pesosV[0])
+    #print(pesosV[0])
 
     start = time.time()
     erroTotal = 0
+    ultimoErroTotal = 0
     #feedforward
-    for linha in range(len(entrada)):
-        #print((time.time() - start) * 1000, "ms")
-        start = time.time()
-        z_in = []
-        for j in range(qtNeuroniosIntermediarios):
-            estaEntrada = entrada[linha]
-            z_in.append(sum([estaEntrada[i] * pesosV[i][j] for i in range(qtNeuronios)]))
-        #z_in = [x for x in z_in] #normalizar para aplicação de sigmoide
-        #print (z_in)
-        z_out = [sigmoide(j) for j in z_in]
-        #print (z_out)
+
+    tempo = time.time()
+    for iteracao in range(10):
+        acertos = 0
+        for linha in range(len(entrada)):
+        #for linha in range(201):
+            #print((time.time() - start) * 1000, "ms")
+            start = time.time()
+            z_in = []
+            for j in range(qtNeuroniosIntermediarios):
+                estaEntrada = entrada[linha]
+                z_in.append(sum([estaEntrada[i] * pesosV[i][j] for i in range(qtNeuronios)]))
+            #z_in = [x for x in z_in] #normalizar para aplicação de sigmoide
+            #print (z_in)
+            z_out = [sigmoide(j) for j in z_in]
+            #print (z_out)
 
 
 
-        y_in = []
-        for k in range(qtSaidas):
-            estaEntrada = z_out
-            y_in.append(sum([estaEntrada[j] * pesosW[j][k] for j in range(qtNeuroniosIntermediarios)]))
-        #y_in = [round(x, 5) for x in y_in]
-        #print()
-        #print(y_in)
-        y_out = [sigmoide(k) for k in y_in]
-        # if random.random() > 0.015:
-        #     print (y_in)
-        #     q
+            y_in = []
+            for k in range(qtSaidas):
+                estaEntrada = z_out
+                y_in.append(sum([estaEntrada[j] * pesosW[j][k] for j in range(qtNeuroniosIntermediarios)]))
+            #y_in = [round(x, 5) for x in y_in]
+            #print()
+            #print(y_in)
+            y_out = [sigmoide(k) for k in y_in]
+            # if random.random() > 0.015:
+            #     print (y_in)
+            #     q
 
-        estaSaida = saida[linha]
-        erroTotal += sum([abs(estaSaida[x] - y_out[x]) for x in range(10)])
-        if(linha % 100 == 0): print(linha, ": ", erroTotal)
-        termoInfErroFinal = [(estaSaida[k] - y_out[k]) * derivada(y_in[k]) for k in range(qtSaidas)]
+            estaSaidaEsperada = saida[linha]
+            esteErro = sum([abs(estaSaidaEsperada[x] - y_out[x]) for x in range(10)])
+            erroTotal += esteErro
 
-        #print(estaSaida[0] - y_out[0])
-        delta_w = []
-        for j in range(qtNeuroniosIntermediarios):
-            delta_w.append([taxaAprendizado * termoInfErroFinal[k] * z_out[j] for k in range(qtSaidas) ])
+            #retorna um vetor onde os valores de entrada maiores que
+            #o limiar são alterados para 1, e os outros 0
+            estaResposta = [int(y > 0.7) for y in y_out]
+            if estaResposta == estaSaidaEsperada:
+                acertos += 1
 
-        delta_in = []
-        for j in range(qtNeuroniosIntermediarios):
-            delta_in.append(sum([termoInfErroFinal[k] * pesosW[j][k] for k in range(qtSaidas)]))
+            if(linha % 100 == 0 and linha > 0):
+                #print(estaSaidaEsperada)
+                #print([round(y,4) for y in y_out])
+                #print(estaResposta)
 
-        #print(delta_in)
+                #print("Este erro: ", esteErro)
+                print("Tempo de processamento: ", round(time.time() - tempo, 2) , "s")
+                print("Erro fracionado das últimos 100 linhas: ", linha, ": ", erroTotal - ultimoErroTotal)
+                print("Acertos nessa epoca: ", acertos, "/", linha)
+                print("Taxa de acerto: ", round(float(acertos*100)/linha, 2), "%")
+                print()
+                ultimoErroTotal = erroTotal
+            termoInfErroFinal = [(estaSaidaEsperada[k] - y_out[k]) * derivada(y_in[k]) for k in range(qtSaidas)]
 
-        termoInfErroInicial = [delta_in[j] * derivada(z_in[j]) for j in range(qtNeuroniosIntermediarios)]
+            #print(estaSaidaEsperada[0] - y_out[0])
+            delta_w = []
+            for j in range(qtNeuroniosIntermediarios):
+                delta_w.append([taxaAprendizado * termoInfErroFinal[k] * z_out[j] for k in range(qtSaidas) ])
+
+            delta_in = []
+            for j in range(qtNeuroniosIntermediarios):
+                delta_in.append(sum([termoInfErroFinal[k] * pesosW[j][k] for k in range(qtSaidas)]))
+
+            #print(delta_in)
+
+            termoInfErroInicial = [delta_in[j] * derivada(z_in[j]) for j in range(qtNeuroniosIntermediarios)]
 
 
-        delta_v = []
-        for i in range(qtNeuronios):
-            delta_v.append([taxaAprendizado * termoInfErroInicial[j] * entrada[linha][i] for j in range(qtNeuroniosIntermediarios) ])
+            delta_v = []
+            for i in range(qtNeuronios):
+                delta_v.append([taxaAprendizado * termoInfErroInicial[j] * entrada[linha][i] for j in range(qtNeuroniosIntermediarios) ])
 
-        #print(delta_v)
-        #print(linha, sum([sum(x) for x in delta_v]))
-
-
-        #atualização de pesos
-
-        for i in range(len(pesosV)):
-            pesosV[i] = [x + y for (x,y) in zip(pesosV[i], delta_v[i])]
-
-        for j in range(len(pesosW)):
-            pesosW[j] = [x + y for (x,y) in zip(pesosW[j], delta_w[j])]
+            #print(delta_v)
+            #print(linha, sum([sum(x) for x in delta_v]))
 
 
-        # total = 0
-        # for x in pesosV: total += sum(x)
-        # print(total)
-        #print(pesosW[10][2])
+            #atualização de pesos
+
+            for i in range(len(pesosV)):
+                pesosV[i] = [x + y for (x,y) in zip(pesosV[i], delta_v[i])]
+
+            for j in range(len(pesosW)):
+                pesosW[j] = [x + y for (x,y) in zip(pesosW[j], delta_w[j])]
+
+
+            # total = 0
+            # for x in pesosV: total += sum(x)
+            # print(total)
+            #print(pesosW[10][2])
+    arquivoPesosV = codecs.open("pesosV.txt", 'w')
+    for i in range(len(pesosV)):
+        inserir = pesosV[i] = [round(v, 5) for v in pesosV[i]]
+        arquivoPesosV.write(str(inserir)[1:-1] + "\n")
+
+    arquivoPesosW = codecs.open("pesosW.txt", 'w')
+    for j in range(len(pesosW)):
+        inserir = pesosW[j] = [round(w, 5) for w in pesosW[j]]
+        arquivoPesosW.write(str(inserir)[1:-1] + "\n")
+
+    arquivoPesosV.close()
+    arquivoPesosW.close()
+    print(pesosV)
+    print()
+    print()
+    print()
+    print()
+    print()
+    print(pesosW)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:

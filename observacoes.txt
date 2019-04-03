@@ -1,6 +1,7 @@
     A primeira consideração tomada na implementação do algoritmo foi decidir a
 quantidade de neurônios na camada intermediária - a média geométrica pareceu ser
-interessante para isso.
+interessante para isso, mas, conforme o desenvolvimento prosseguiu, viu-se
+que um número menor era suficiente.
     Uma preocupação inicial foi sempre evitar enganos nos índices; felizmente,
 a sintaxe de Python é razoavelmente compacta, portanto é possível escrever
 código que se pareça com as funções matemáticas descritas no algoritmo da
@@ -28,12 +29,26 @@ Talvez haja algo melhor que um loop?
     Economiza 3 ms por linha processada.
     Porém, uma otimização bem mais potente seria diminuir a quantidade de
 neurônios intermediários - uma diminuição em 50% diminui o tempo de
-processamento em cerca de 45%, o que pode ser testado se isso não trouxer
-prejuízo ao funcionamento do programa.
-
-
-Código usado para temporização:
-    start = time.time()
-    ...
-    print((time.time() - start) * 1000, "ms")
-    start = time.time()
+processamento por linha em cerca de 45%, e tendo uma piora apenas leve na
+diminuição de erro médio por linha.
+    Para testar o acerto do algoritmo, colocamos um limiar de 0.7 (seria
+arrojado demais? Conservador demais? Há de se testar). Assim, se o resultado de
+um dos itens da camada final for maior que o limiar, ele será convertido em uma
+resposta positiva; para testar se a resposta foi correta, convertemos o vetor
+da resposta em um vetor de booleanos (depois transformados em 0 e 1), e
+verificamos se é completamente igual à resposta esperada; os erros possíveis
+são: ausência de itens 1 na resposta, item 1 incorreto na resposta, e presença
+de mais de um item 1 na resposta.
+    Com o uso de algumas variáveis de depuração, encontramos os seguintes níveis
+de acerto num teste usando a base com 10 mil linhas, rodando por 10 épocas, com
+limiar de 0.7:
+    1ª época: 52% de acerto
+    2ª época: 77% de acerto
+    3ª época: 82% de acerto
+    4ª época: 86% de acerto
+    5ª época: 87% de acerto
+    6ª época: 88% de acerto
+    7ª época: 89% de acerto
+    8ª época: 90% de acerto
+    9ª época: 91% de acerto
+    10ª época: 92% de acerto
