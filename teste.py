@@ -13,6 +13,7 @@ def main(filename, arqPesosV="pesosV.txt", arqPesosW="pesosW.txt"):
     entrada = [] #matriz de entrada, 784 colunas
     saida = [] #matriz de saida, 10 colunas
     qtSaidas = 10 #de 0 a 9
+    limiar = 0.5
 
     #valores serão recebidos a partir dos arquivos de pesos salvos
     qtNeuronios = 0
@@ -83,7 +84,7 @@ def main(filename, arqPesosV="pesosV.txt", arqPesosW="pesosW.txt"):
 
         #retorna um vetor onde os valores de entrada maiores que
         #o limiar são alterados para 1, e os outros 0
-        estaResposta = [int(y > 0.7) for y in y_out]
+        estaResposta = [int(y > limiar) for y in y_out]
         if estaResposta == estaSaidaEsperada:
             acertos += 1
             acertosPorNumero[estaSaidaEsperada.index(1)] += 1

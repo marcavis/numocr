@@ -40,20 +40,75 @@ verificamos se é completamente igual à resposta esperada; os erros possíveis
 são: ausência de itens 1 na resposta, item 1 incorreto na resposta, e presença
 de mais de um item 1 na resposta.
     Com o uso de algumas variáveis de depuração, encontramos os seguintes níveis
-de acerto num teste usando a base com 10 mil linhas, rodando por 10 épocas, com
-limiar de 0.7:
-    1ª época: 52% de acerto
-    2ª época: 77% de acerto
-    3ª época: 82% de acerto
-    4ª época: 86% de acerto
-    5ª época: 87% de acerto
-    6ª época: 88% de acerto
-    7ª época: 89% de acerto
-    8ª época: 90% de acerto
-    9ª época: 91% de acerto
-    10ª época: 92% de acerto
+de acerto executando o treinamento com a base com 10 mil linhas,
+rodando por 20 épocas, com limiar de 0.7, e tempo de processamento de 44 minutos:
+    Epoca 1: 55.74 %  de acerto
+    Epoca 2: 78.42 %  de acerto
+    Epoca 3: 83.19 %  de acerto
+    Epoca 4: 86.08 %  de acerto
+    Epoca 5: 87.96 %  de acerto
+    Epoca 6: 89.34 %  de acerto
+    Epoca 7: 90.37 %  de acerto
+    Epoca 8: 91.26 %  de acerto
+    Epoca 9: 92.20 %  de acerto
+    Epoca 10: 92.85 %  de acerto
+    Epoca 11: 93.51 %  de acerto
+    Epoca 12: 94.17 %  de acerto
+    Epoca 13: 94.66 %  de acerto
+    Epoca 14: 95.07 %  de acerto
+    Epoca 15: 95.47 %  de acerto
+    Epoca 16: 95.81 %  de acerto
+    Epoca 17: 96.18 %  de acerto
+    Epoca 18: 96.42 %  de acerto
+    Epoca 19: 96.61 %  de acerto
+    Epoca 20: 96.83 %  de acerto
 
-    Terminado o treinamento, haverá uma fase de testes com todos os itens da
-base maior (60 mil linhas); tanto com seleções aleatórias, quanto com
-verificação separada por núemro alvo (há uma expectativa de que os números 1 e 7
-são os mais difíceis de serem distinguidos).
+    Porém, notamos que o desempenho no teste da base de 60.000 linhas,
+posteriormente ao treinamento, não melhorou muito depois de 10 épocas, sugerindo
+que a rede neural estava se encaminhando para um certo grau de overfitting.
+    O programa teste.py é baseado no treinamento, porém simplificado para não
+alterar pesos. Possui algumas métricas de avaliação da rede neural: quantidade
+de acertos, quantidade de acertos por número esperado (achávamos que distinguir
+1 de 7 seria difícil, mas percebeu-se que o número 5 era o mais difícil afinal),
+e tipo de erro - se a rede não classificou como nenhum número, ou se classificou
+como o número errado, ou se escolheu dois (ou mais) números ao mesmo tempo.
+    Resultado da execução de teste.py usando a base de 60 mil linhas:
+
+Tempo de processamento:  236.65 s
+Acertos:  51601 / 59900
+Taxa de acerto:  86.15 %
+Acertos onde o número 0 era esperado: 5426 / 5913 ou 91.76 %
+Acertos onde o número 1 era esperado: 6448 / 6732 ou 95.78 %
+Acertos onde o número 2 era esperado: 5243 / 5949 ou 88.13 %
+Acertos onde o número 3 era esperado: 5088 / 6120 ou 83.14 %
+Acertos onde o número 4 era esperado: 4969 / 5833 ou 85.19 %
+Acertos onde o número 5 era esperado: 3971 / 5412 ou 73.37 %
+Acertos onde o número 6 era esperado: 5325 / 5908 ou 90.13 %
+Acertos onde o número 7 era esperado: 5441 / 6256 ou 86.97 %
+Acertos onde o número 8 era esperado: 4606 / 5839 ou 78.88 %
+Acertos onde o número 9 era esperado: 5084 / 5939 ou 85.6 %
+Erros onde o programa não classificou como nenhum número: 5928
+Erros onde o programa classificou como o número errado: 1813
+Erros onde o programa classificou como mais de um número ao mesmo tempo: 559
+
+    Vemos que o fato de que o erro mais comum é a rede neural decidir não
+apontar nenhum número como o correto; talvez então seja interessante reduzir o
+limiar, atualmente em 0.7. Usando 0.5, há uma melhora razoável na taxa de
+acerto:
+
+Tempo de processamento:  251.9 s
+Acertos:  52329 / 59900
+Taxa de acerto:  87.36 %
+Acertos onde o número 0 era esperado: 5483 / 5913 ou 92.73 %
+Acertos onde o número 1 era esperado: 6465 / 6732 ou 96.03 %
+Acertos onde o número 2 era esperado: 5243 / 5949 ou 88.13 %
+Acertos onde o número 3 era esperado: 5117 / 6120 ou 83.61 %
+Acertos onde o número 4 era esperado: 5120 / 5833 ou 87.78 %
+Acertos onde o número 5 era esperado: 4071 / 5412 ou 75.22 %
+Acertos onde o número 6 era esperado: 5371 / 5908 ou 90.91 %
+Acertos onde o número 7 era esperado: 5552 / 6256 ou 88.75 %
+Acertos onde o número 8 era esperado: 4711 / 5839 ou 80.68 %
+Acertos onde o número 9 era esperado: 5196 / 5939 ou 87.49 %
+Erros onde o programa não classificou como nenhum número: 3898
+Erros onde o programa classificou como o número errado: 2245
+Erros onde o programa classificou como mais de um número ao mesmo tempo: 1429
