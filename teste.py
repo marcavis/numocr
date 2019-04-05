@@ -114,5 +114,5 @@ if __name__ == "__main__":
     if len(sys.argv) == 4:
         main(sys.argv[1], sys.argv[2], sys.argv[3])
     else:
-        print("Uso: python3 main.py <arquivo de treinamento> <arquivo com pesos 1a camada> <arquivo com pesos 2a camada>")
+        print("Uso: python3 main.py <arquivo de teste> <arquivo com pesos 1a camada> <arquivo com pesos 2a camada>")
         print("Se não informados, os pesos serão carregados pelos arquivos padrão pesosV.txt e pesosW.txt")
